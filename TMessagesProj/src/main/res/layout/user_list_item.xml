@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/relativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:theme="@style/Theme.TMessages"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="5dip">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/userPhoto"
+        android:src="@drawable/tab_user"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:scaleType="center">
+    </ImageView>
+
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:id="@+id/userName"
+        android:layout_toRightOf="@+id/userPhoto"
+        android:layout_marginLeft="10dip">
+    </TextView>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:id="@+id/userPhone"
+        android:layout_toRightOf="@+id/userPhoto"
+        android:layout_below="@+id/userName"
+        android:textColor="#808080"
+        android:layout_marginLeft="10dip">
+    </TextView>
+
+    <ImageView
+        android:id="@+id/userCurrent"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="2dip"
+        android:scaleType="center"
+        android:src="@drawable/sticker_added"
+        android:visibility="invisible"></ImageView>
+
+</RelativeLayout>
