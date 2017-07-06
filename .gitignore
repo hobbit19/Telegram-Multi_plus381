@@ -1,0 +1,13 @@
+.idea/
+.gradle/
+build/
+obj/
+*.iml
+local.properties
+*.keystore
+gradle.properties
+google-services.json
+TMessagesProj/.externalNativeBuild
+TMessagesProj/jni/libtgvoip
+TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
+*.apk
