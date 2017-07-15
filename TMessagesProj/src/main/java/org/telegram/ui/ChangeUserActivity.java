@@ -115,8 +115,8 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
 //            prepareThread.start();
 
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//            fab.setColorNormal(Theme.getColor(Theme.key_chats_actionBackground));
-//            fab.setColorPressed(Theme.getColor(Theme.key_chats_actionPressedBackground));
+            fab.setColorNormal(0xff54759e);
+            fab.setColorPressed(0xff54759e);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

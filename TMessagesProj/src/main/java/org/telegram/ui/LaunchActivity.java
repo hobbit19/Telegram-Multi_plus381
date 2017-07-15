@@ -374,7 +374,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (position == versionRow) {
                     try {
-                        Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=org.telegram.plus"));
+                        Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=org.telegram.multi"));
                         startActivityForResult(pickIntent, 502);
                     } catch (Exception e) {
                         FileLog.e("tmessages", e);

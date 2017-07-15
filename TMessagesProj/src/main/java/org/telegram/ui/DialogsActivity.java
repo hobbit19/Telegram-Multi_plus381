@@ -351,20 +351,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         listView.setEmptyView(emptyView);
                     }
                     if (!onlySelect) {
-//                        floatingButton.setVisibility(View.VISIBLE);
-//                        floatingHidden = true;
-//                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
-                        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
-                        boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
-//                        floatingButton.setTranslationY((float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f)); //Multi FAB to bottom up
-//                        hideFloatingButton(false);
-
-                        floatingButton.setVisibility(View.VISIBLE);
-                        floatingHidden = true;
-//                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
-                        ViewProxy.setTranslationY(floatingButton, (float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f)); //Multi FAB to bottom up
-
-                        hideFloatingButton(false);
+                        DialogsActivity.this.floatingButton.setVisibility(View.VISIBLE);
+                        DialogsActivity.this.floatingHidden = true;
+                        DialogsActivity.this.floatingButton.setTranslationY((float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f));
+                        DialogsActivity.this.hideFloatingButton(false);
                     }
                     if (listView.getAdapter() != dialogsAdapter) {
                         listView.setAdapter(dialogsAdapter);
@@ -953,6 +943,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         floatingButton.setScaleType(ImageView.ScaleType.CENTER);
         floatingButton.setBackgroundResource(R.drawable.floating_states);
         floatingButton.setImageResource(R.drawable.floating_pencil);
+//        floatingButton.setTranslationY((float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f));
+
         if (Build.VERSION.SDK_INT >= 21) {
             StateListAnimator animator = new StateListAnimator();
             animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(floatingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
@@ -973,9 +965,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (hideTabs || !plusTabsToBottom) {
             f4 = 14.0f;
         } else {
-            f4 = (float) (tabsHeight + 14);
+            f4 = (float) (56.0f);
         }
-        if(plusTabsToBottom) f4 = (float) (tabsHeight + 14);
+        if(plusTabsToBottom) f4 = (float) (56.0f);
+        Log.i("TGM", "createView: plusTabsToBottom = " + plusTabsToBottom + " f4 = " + f4);
         frameLayout.addView(floatingButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, f4));
 
         floatingButton.setOnClickListener(new View.OnClickListener() {
@@ -1492,51 +1485,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//            super.onConfigurationChanged(newConfig);
-//        if (!onlySelect && floatingButton != null) {
-//            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                @Override
-//                public void onGlobalLayout() {
-//                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
-//                    floatingButton.setClickable(!floatingHidden);
-//                    if (floatingButton != null) {
-//                        if (Build.VERSION.SDK_INT < 16) {
-//                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                        } else {
-//                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                        }
-//                    }
-//                }
-//            });
-//        }
-//    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (!this.onlySelect && this.floatingButton != null) {
-            this.floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            super.onConfigurationChanged(newConfig);
+        if (!onlySelect && floatingButton != null) {
+            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
                 public void onGlobalLayout() {
-                    float f;
-
-                    ImageView access$800 = DialogsActivity.this.floatingButton;
-                    if (DialogsActivity.this.floatingHidden) {
-                        f = (hideTabs || !plusTabsToBottom) ? 100.0f : 150.0f;
-                        f = (float) AndroidUtilities.dp(f);
-                    } else {
-                        f = 0.0f;
-                    }
-                    access$800.setTranslationY(f);
-                    DialogsActivity.this.floatingButton.setClickable(!DialogsActivity.this.floatingHidden);
-                    if (DialogsActivity.this.floatingButton == null) {
-                        return;
-                    }
-                    if (Build.VERSION.SDK_INT < 16) {
-                        DialogsActivity.this.floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    } else {
-                        DialogsActivity.this.floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
+                    floatingButton.setClickable(!floatingHidden);
+                    if (floatingButton != null) {
+                        if (Build.VERSION.SDK_INT < 16) {
+                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
                     }
                 }
             });

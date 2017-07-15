@@ -110,7 +110,7 @@ public class AndroidUtilities {
     public static final String THEME_PREFS = "theme" + ChangeUserHelper.getUserTag();
     public static final int THEME_PREFS_MODE = Activity.MODE_PRIVATE;
 
-    public static final int defColor = 0xff009688;//0xff58BCD5;//0xff43C3DB;//0xff2f8cc9;58BCD5//0xff55abd2
+    public static final int defColor = 0xff54759e;//0xff58BCD5;//0xff43C3DB;//0xff2f8cc9;58BCD5//0xff55abd2
     public static int themeColor = getIntColor("themeColor");
 
     public static boolean needRestart = false;
@@ -1457,7 +1457,7 @@ public class AndroidUtilities {
 
     public static int getDefBubbleColor(){
         int color = 0xffb2dfdb;//0xff80cbc4;
-        if(getIntColor("themeColor") != 0xff009688){
+        if(getIntColor("themeColor") != 0xff54759e){
             color = AndroidUtilities.getIntDarkerColor("themeColor", -0x50);
         }
         return color;
