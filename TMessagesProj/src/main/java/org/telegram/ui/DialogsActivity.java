@@ -723,7 +723,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 if (!muted) {
                                     showDialog(AlertsCreator.createMuteAlert(getParentActivity(), selectedDialog));
                                 } else {
-                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putInt("notify2_" + selectedDialog, 0);
                                     MessagesStorage.getInstance().setDialogFlags(selectedDialog, 0);
@@ -825,7 +825,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 if (!muted) {
                                     showDialog(AlertsCreator.createMuteAlert(getParentActivity(), selectedDialog));
                                 } else {
-                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications"+ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putInt("notify2_" + selectedDialog, 0);
                                     MessagesStorage.getInstance().setDialogFlags(selectedDialog, 0);

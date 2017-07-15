@@ -74,7 +74,7 @@ public class ApplicationLoader extends Application {
     public static void reloadWallpaper() {
         cachedWallpaper = null;
         serviceMessageColor = 0;
-        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).edit().remove("serviceMessageColor").commit();
+        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE).edit().remove("serviceMessageColor").commit();
         loadWallpaper();
     }
 
@@ -82,7 +82,7 @@ public class ApplicationLoader extends Application {
         int result[] = AndroidUtilities.calcDrawableColor(cachedWallpaper);
         serviceMessageColor = result[0];
         serviceSelectedMessageColor = result[1];
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
         preferences.edit().putInt("serviceMessageColor", serviceMessageColor).putInt("serviceSelectedMessageColor", serviceSelectedMessageColor).commit();
     }
 
@@ -104,7 +104,7 @@ public class ApplicationLoader extends Application {
                 synchronized (sync) {
                     int selectedColor = 0;
                     try {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                         int selectedBackground = preferences.getInt("selectedBackground", 1000001);
                         selectedColor = preferences.getInt("selectedColor", 0);
                         serviceMessageColor = preferences.getInt("serviceMessageColor", 0);

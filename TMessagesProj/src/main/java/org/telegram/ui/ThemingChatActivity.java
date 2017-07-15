@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.ChangeUserHelper;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
@@ -1224,7 +1225,7 @@ public class ThemingChatActivity extends BaseFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (numberPicker.getValue() != currentValue) {
                                     commitInt("chatTextSize", numberPicker.getValue());
-                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putInt("fons_size", numberPicker.getValue());
                                     MessagesController.getInstance().fontSize = numberPicker.getValue();
@@ -1429,7 +1430,7 @@ public class ThemingChatActivity extends BaseFragment {
     private void resetInt(String key, int value){
         resetPref(key);
         if(key.equals("chatTextSize")){
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt("fons_size", value);
             MessagesController.getInstance().fontSize = value;

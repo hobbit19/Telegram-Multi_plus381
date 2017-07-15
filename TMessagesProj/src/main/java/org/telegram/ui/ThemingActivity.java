@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.ChangeUserHelper;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
@@ -262,7 +263,7 @@ public class ThemingActivity extends BaseFragment {
                                 if(wFile.exists()){
                                     builder.setMessage(themeFile.getName()+"\n"+wFile.getName());
                                     //Change Stock Background to set Custom Wallpaper
-                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                                     int selectedBackground = preferences.getInt("selectedBackground", 1000001);
                                     if (selectedBackground == 1000001) {
                                         //File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
@@ -317,7 +318,7 @@ public class ThemingActivity extends BaseFragment {
                                                 editor.clear();
                                                 editor.commit();
                                                 //Stock Background
-                                                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                                                 editor = preferences.edit();
                                                 editor.putInt("selectedBackground", 1000001);
                                                 editor.putInt("selectedColor", 0);

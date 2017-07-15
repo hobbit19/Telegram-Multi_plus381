@@ -1234,7 +1234,7 @@
   <string name="Quote">ЦИТАТА</string>
   <string name="RemoveUserAdmin">Удалить из списка админов</string>
   <string name="Change_another_user">Мультиюзер</string>
-  <string name="ScanningProfiles">Сканирование прфоилей...</string>
+  <string name="ScanningProfiles">Сканирование профилей...</string>
   <string name="DeleteFirstUser" translatable="false">Невозможно удалить первого пользователя!</string>
   <string name="MaxUsersCount" translatable="false">Максимум доступно 99 пользователей!</string>
   <string name="DialogSure" translatable="false">Вы уверены?</string>

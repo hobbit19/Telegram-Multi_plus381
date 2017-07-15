@@ -497,7 +497,7 @@ public class Utilities {
                 File wFile = new File(wName);
                 if(wFile.exists()){
                     //Change Stock Background to set Custom Wallpaper
-                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE);
                     int selectedBackground = preferences.getInt("selectedBackground", 1000001);
                     if (selectedBackground == 1000001) {
                         //File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");

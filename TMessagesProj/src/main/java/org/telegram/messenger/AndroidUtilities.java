@@ -171,7 +171,7 @@ public class AndroidUtilities {
                 if (Build.VERSION.SDK_INT >= 11) {
                     bitmapColor = ((ColorDrawable) drawable).getColor();
                 } else {
-                    bitmapColor = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).getInt("selectedColor", 0xff000000);
+                    bitmapColor = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE).getInt("selectedColor", 0xff000000);
                 }
             }
         } catch (Exception e) {
@@ -1386,7 +1386,7 @@ public class AndroidUtilities {
 
     public static boolean getBoolMain(String key){
         boolean s = false;
-        if (ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).getBoolean(key, false)) s=true;
+        if (ApplicationLoader.applicationContext.getSharedPreferences("mainconfig"+ ChangeUserHelper.getUserTag(), Activity.MODE_PRIVATE).getBoolean(key, false)) s=true;
         return s;
     }
 /*
