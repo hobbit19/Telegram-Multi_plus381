@@ -36,6 +36,7 @@ import org.telegram.messenger.ChangeUserHelper;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig2;
+import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Adapters.UserItemsAdapter;
 import org.telegram.ui.Components.UserItems;
@@ -119,7 +120,7 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (lvUserList.getCount() <= 9)
+                    if (lvUserList.getCount() <= 99)
                         addUser();
                     else
                         Toast.makeText(ChangeUserActivity.this, getText(R.string.MaxUsersCount), Toast.LENGTH_SHORT).show();
@@ -195,7 +196,7 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
         ad.setMessage(message);
         ad.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
-                restart();
+                Utilities.restartApp();
             }
         });
         ad.setNegativeButton(button2String, new DialogInterface.OnClickListener() {
@@ -241,14 +242,14 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
         sharedPref.edit().apply();
         deleteUser(sharedPref.getInt("addedUser",10));
         Log.i("userTAG", "backToLastUser: tag changed to _" + sharedPref.getInt("lastID",0));
-        restart();
+        Utilities.restartApp();
     }
 
     public int getUsersDisabled() {
         int count = 0;
         Log.i("TGM", "getUsersDisabled: called");
         SharedPreferences userDisabled = getSharedPreferences("userID", Context.MODE_PRIVATE);
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 99; i++) {
             if(userDisabled.getInt("state_user_"+i,1) == 1) return i;
         }
         return -1;
@@ -258,7 +259,7 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
         List<Integer> users = new ArrayList<Integer>();
         Log.i("TGM", "getUsersEnabled: called");
         SharedPreferences userDisabled = getSharedPreferences("userID", Context.MODE_PRIVATE);
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 99; i++) {
             if(userDisabled.getInt("state_user_"+i,1) == 0) {
                 users.add(i);
             }
@@ -274,27 +275,27 @@ public class ChangeUserActivity extends Activity implements AdapterView.OnItemCl
         sharedPref.edit().putInt("userID", ChangeUserHelper.getID()).commit();
         sharedPref.edit().apply();
         Log.i("userTAG", "setUser: tag changed to " + ChangeUserHelper.getUserTag());
-        restart();
+        Utilities.restartApp();
     }
 
-    public void restart() {
-//        Intent launchIntent = new Intent(getApplicationContext(), org.telegram.ui.LaunchActivity.class);
-//        PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, launchIntent , 0);
-//        AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1500, intent);
-//        Log.i("userTAG", "restarting... " + ChangeUserHelper.getUserTag());
-//        System.exit(2);
-        Intent mStartActivity = new Intent(getApplicationContext(), org.telegram.ui.LaunchActivity.class);
-        int mPendingIntentId = 123456;
-        PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 500, mPendingIntent);
-//        System.exit(0);
-        moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
-    }
+//    public void restart() {
+////        Intent launchIntent = new Intent(getApplicationContext(), org.telegram.ui.LaunchActivity.class);
+////        PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, launchIntent , 0);
+////        AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+////        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1500, intent);
+////        Log.i("userTAG", "restarting... " + ChangeUserHelper.getUserTag());
+////        System.exit(2);
+//        Intent mStartActivity = new Intent(getApplicationContext(), org.telegram.ui.LaunchActivity.class);
+//        int mPendingIntentId = 123456;
+//        PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity,
+//                PendingIntent.FLAG_CANCEL_CURRENT);
+//        AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+//        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 500, mPendingIntent);
+////        System.exit(0);
+//        moveTaskToBack(true);
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        System.exit(1);
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

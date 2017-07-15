@@ -36,6 +36,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -102,6 +103,8 @@ import org.telegram.ui.Components.PlayerView;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -169,6 +172,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private boolean countSize;
 
     private boolean hideTabs;
+    private boolean plusTabsToBottom;
     private int selectedTab;
     private DialogsAdapter dialogsBackupAdapter;
     private boolean tabsHidden;
@@ -185,18 +189,38 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         super(args);
     }
 
+
+    public List<Integer> getUsersEnabled() {
+        List<Integer> users = new ArrayList<Integer>();
+        Log.i("TGM", "getUsersEnabled: called");
+        SharedPreferences userDisabled = ApplicationLoader.applicationContext.getSharedPreferences("userID", Context.MODE_PRIVATE);
+        for (int i = 0; i < 99; i++) {
+            if(userDisabled.getInt("state_user_"+i,1) == 0) {
+                users.add(i);
+            }
+        }
+        return users;
+    }
+
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
 
         SharedPreferences userID = ApplicationLoader.applicationContext.getSharedPreferences("userID", Context.MODE_PRIVATE);
         userID.edit().putInt("!firstLaunch?",1).commit();
-
-        if(userID.getInt("state_vendor_channels_user_"+ ChangeUserHelper.getID(),0) == 0) {
-            MessagesController.openByUserNameCustom("tgmulti",  0);
-            MessagesController.openByUserNameCustom("RusChannels",  0);
-            MessagesController.openByUserNameCustom("music_rus",  0);
-            userID.edit().putInt("state_vendor_channels_user_"+ChangeUserHelper.getID(),1).commit();
+        String lang = Locale.getDefault().getLanguage();
+        if(getUsersEnabled().size() < 6) {
+            Log.i("TGM", "onFragmentCreate: getUsersEnabled().size() " + getUsersEnabled().size());
+            Log.i("TGM", "onFragmentCreate: getUsersEnabled().size() < 6");
+            if (lang.equals("ru") || lang.equals("uk") || lang.equals("be")) {
+                Log.i("TGM", "onFragmentCreate: lang.equals(\"ru\") || lang.equals(\"uk\") || lang.equals(\"be\"");
+                if (userID.getInt("state_vendor_channels_user_" + ChangeUserHelper.getID(), 0) == 0) {
+                    MessagesController.openByUserNameCustom("tgmulti", 0);
+                    MessagesController.openByUserNameCustom("RusChannels", 0);
+                    MessagesController.openByUserNameCustom("music_rus", 0);
+                    userID.edit().putInt("state_vendor_channels_user_" + ChangeUserHelper.getID(), 1).commit();
+                }
+            }
         }
 
 
@@ -327,9 +351,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         listView.setEmptyView(emptyView);
                     }
                     if (!onlySelect) {
+//                        floatingButton.setVisibility(View.VISIBLE);
+//                        floatingHidden = true;
+//                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
+                        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+                        boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+//                        floatingButton.setTranslationY((float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f)); //Multi FAB to bottom up
+//                        hideFloatingButton(false);
+
                         floatingButton.setVisibility(View.VISIBLE);
                         floatingHidden = true;
-                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
+//                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
+                        ViewProxy.setTranslationY(floatingButton, (float) AndroidUtilities.dp(plusTabsToBottom ? 150.0f : 100.0f)); //Multi FAB to bottom up
+
                         hideFloatingButton(false);
                     }
                     if (listView.getAdapter() != dialogsAdapter) {
@@ -932,7 +966,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             });
         }
-        frameLayout.addView(floatingButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, 14));
+//        frameLayout.addView(floatingButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, 14));
+        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+        boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+        float f4;
+        if (hideTabs || !plusTabsToBottom) {
+            f4 = 14.0f;
+        } else {
+            f4 = (float) (tabsHeight + 14);
+        }
+        if(plusTabsToBottom) f4 = (float) (tabsHeight + 14);
+        frameLayout.addView(floatingButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, f4));
+
         floatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -945,7 +990,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         tabsView = new FrameLayout(context);
         createTabs(context);
         //if(dialogsType == 0 || dialogsType > 2){
-        frameLayout.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, tabsHeight, Gravity.TOP, 0, 0, 0, 0));
+//        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+//        boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+
+//        frameLayout.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, tabsHeight, Gravity.TOP, 0, 0, 0, 0));
+        frameLayout.addView(tabsView, LayoutHelper.createFrame(-1, tabsHeight, plusTabsToBottom ? 80 : 48));
         //}
         int def = themePrefs.getInt("themeColor", AndroidUtilities.defColor);
         final int hColor = themePrefs.getInt("chatsHeaderColor", def);
@@ -1017,7 +1066,22 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             if(!disableAnimation) {
                                 hideTabsAnimated(false);
                                 if (firstVisibleItem == 0) {
-                                    listView.setPadding(0, AndroidUtilities.dp(tabsHeight), 0, 0);
+                                    SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+                                    boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+                                    int i;
+                                    int dp;
+                                    RecyclerListView access$200 = DialogsActivity.this.listView;
+                                    if (plusTabsToBottom) {
+                                        i = 0;
+                                    } else {
+                                        i = AndroidUtilities.dp((float) tabsHeight);
+                                    }
+                                    if (plusTabsToBottom) {
+                                        dp = AndroidUtilities.dp((float) tabsHeight);
+                                    } else {
+                                        dp = 0;
+                                    }
+                                    access$200.setPadding(0, i, 0, dp);
                                 }
                             } else{
                                 hideFloatingButton(false);
@@ -1428,21 +1492,51 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//            super.onConfigurationChanged(newConfig);
+//        if (!onlySelect && floatingButton != null) {
+//            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                @Override
+//                public void onGlobalLayout() {
+//                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
+//                    floatingButton.setClickable(!floatingHidden);
+//                    if (floatingButton != null) {
+//                        if (Build.VERSION.SDK_INT < 16) {
+//                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                        } else {
+//                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-            super.onConfigurationChanged(newConfig);
-        if (!onlySelect && floatingButton != null) {
-            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
+        super.onConfigurationChanged(newConfig);
+        if (!this.onlySelect && this.floatingButton != null) {
+            this.floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 public void onGlobalLayout() {
-                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
-                    floatingButton.setClickable(!floatingHidden);
-                    if (floatingButton != null) {
-                        if (Build.VERSION.SDK_INT < 16) {
-                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
+                    float f;
+
+                    ImageView access$800 = DialogsActivity.this.floatingButton;
+                    if (DialogsActivity.this.floatingHidden) {
+                        f = (hideTabs || !plusTabsToBottom) ? 100.0f : 150.0f;
+                        f = (float) AndroidUtilities.dp(f);
+                    } else {
+                        f = 0.0f;
+                    }
+                    access$800.setTranslationY(f);
+                    DialogsActivity.this.floatingButton.setClickable(!DialogsActivity.this.floatingHidden);
+                    if (DialogsActivity.this.floatingButton == null) {
+                        return;
+                    }
+                    if (Build.VERSION.SDK_INT < 16) {
+                        DialogsActivity.this.floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    } else {
+                        DialogsActivity.this.floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
             });
@@ -1605,7 +1699,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return;
         }
         floatingHidden = hide;
-        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) : 0).setDuration(300);
+        float f = (plusTabsToBottom) ? 100.0f : 150.0f;
+        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(f) : 0).setDuration(300);
         animator.setInterpolator(floatingInterpolator);
         floatingButton.setClickable(!hide);
         animator.start();
@@ -2000,6 +2095,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         boolean hideFavs = plusPreferences.getBoolean("hideFavs", false);
 
         hideTabs = plusPreferences.getBoolean("hideTabs", false);
+        plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
         disableAnimation = plusPreferences.getBoolean("disableTabsAnimation", false);
 
         if(hideUsers && hideGroups && hideSGroups && hideChannels && hideBots && hideFavs){
@@ -2778,6 +2874,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private void updateTabs(){
         SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
         hideTabs = plusPreferences.getBoolean("hideTabs", false);
+        plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
         disableAnimation = plusPreferences.getBoolean("disableTabsAnimation", false);
 
         tabsHeight = plusPreferences.getInt("tabsHeight", 40);
@@ -2791,30 +2888,66 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         //hideTabsAnimated(false);
     }
 
-    private void refreshTabAndListViews(boolean forceHide){
-        if(hideTabs || forceHide){
-            tabsView.setVisibility(View.GONE);
-            listView.setPadding(0, 0, 0, 0);
-        }else{
-            tabsView.setVisibility(View.VISIBLE);
-            int h = AndroidUtilities.dp(tabsHeight);
-            ViewGroup.LayoutParams params = tabsView.getLayoutParams();
-            if(params != null){
-                params.height = h;
-                tabsView.setLayoutParams(params);
+//    private void refreshTabAndListViews(boolean forceHide){
+//        if(hideTabs || forceHide){
+//            tabsView.setVisibility(View.GONE);
+//            listView.setPadding(0, 0, 0, 0);
+//        }else{
+//            tabsView.setVisibility(View.VISIBLE);
+//            int h = AndroidUtilities.dp(tabsHeight);
+//            ViewGroup.LayoutParams params = tabsView.getLayoutParams();
+//            if(params != null){
+//                params.height = h;
+//                tabsView.setLayoutParams(params);
+//            }
+//            listView.setPadding(0, h, 0, 0);
+//            hideTabsAnimated(false);
+//        }
+//        listView.scrollToPosition(0);
+//    }
+
+    private void refreshTabAndListViews(boolean forceHide) {
+        if (this.tabsView != null) {
+            SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+            boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+            if (hideTabs || forceHide) {
+                this.tabsView.setVisibility(View.GONE);
+                this.listView.setPadding(0, 0, 0, 0);
+            } else {
+                int i;
+                this.tabsView.setVisibility(View.VISIBLE);
+                int h = AndroidUtilities.dp((float) tabsHeight);
+                ViewGroup.LayoutParams params = this.tabsView.getLayoutParams();
+                if (params != null) {
+                    params.height = h;
+                    this.tabsView.setLayoutParams(params);
+                }
+                RecyclerListView recyclerListView = this.listView;
+                if (plusTabsToBottom) {
+                    i = 0;
+                } else {
+                    i = h;
+                }
+                if (!plusTabsToBottom) {
+                    h = 0;
+                }
+                recyclerListView.setPadding(0, i, 0, h);
+                hideTabsAnimated(false);
             }
-            listView.setPadding(0, h, 0, 0);
-            hideTabsAnimated(false);
+//            if(plusTabsToBottom) this.listView.setPadding(0, 0, 0, tabsHeight);
         }
-        listView.scrollToPosition(0);
+        this.listView.scrollToPosition(0);
     }
 
     private void hideTabsAnimated(final boolean hide){
+        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+        boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
         if (tabsHidden == hide) {
             return;
         }
         tabsHidden = hide;
         if(hide)listView.setPadding(0, 0, 0, 0);
+//        if(plusTabsToBottom) listView.setPadding(0, 0, 0, tabsHeight);
         ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(tabsView, "translationY", hide ? -AndroidUtilities.dp(tabsHeight) : 0).setDuration(300);
         animator.addListener(new AnimatorListenerAdapterProxy() {
             @Override
@@ -2822,8 +2955,56 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if(!tabsHidden)listView.setPadding(0, AndroidUtilities.dp(tabsHeight) , 0, 0);
             }
         });
+
+        if(!plusTabsToBottom)
         animator.start();
     }
+
+//    private void hideTabsAnimated(boolean hide) {
+//        SharedPreferences plusPreferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+//        final boolean plusTabsToBottom = plusPreferences.getBoolean("dialogsHideTabsToBottom", false);
+//        int i = 1;
+//        if (this.tabsHidden != hide) {
+//            float f;
+//            this.tabsHidden = hide;
+//            if (hide) {
+//                this.listView.setPadding(0, 0, 0, 0);
+//            }
+//            String str = "translationY";
+//            float[] fArr = new float[1];
+//            if (hide) {
+//                int i2 = -AndroidUtilities.dp((float) tabsHeight);
+//                if (plusTabsToBottom) {
+//                    i = -1;
+//                }
+//                f = (float) (i * i2);
+//            } else {
+//                f = 0.0f;
+//            }
+//            fArr[0] = f;
+//            boolean g = false;
+//            if(hideTabs || plusTabsToBottom) g = true;
+//            ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(tabsView, "translationY", g ? -AndroidUtilities.dp(tabsHeight) : 0).setDuration(300);
+//
+////            ObjectAnimator animator = ObjectAnimator.ofFloat(tabsView, str, fArr).setDuration(300);
+////            animator.addListener(new AnimatorListenerAdapterProxy() {
+////                public void onAnimationEnd(Animator animation) {
+////                    if (!DialogsActivity.this.tabsHidden) {
+//////                        DialogsActivity.this.listView.setPadding(0, plusTabsToBottom ? 0 : AndroidUtilities.dp((float) tabsHeight), 0, plusTabsToBottom ? AndroidUtilities.dp((float) tabsHeight) : 0);
+////                    }
+////                }
+////            });
+//            animator.addListener(new AnimatorListenerAdapterProxy() {
+//            @Override
+//            public void onAnimationEnd(Object animation) {
+//                    if (!DialogsActivity.this.tabsHidden) {
+//                        DialogsActivity.this.listView.setPadding(0, plusTabsToBottom ? 0 : AndroidUtilities.dp((float) tabsHeight), 0, plusTabsToBottom ? AndroidUtilities.dp((float) tabsHeight) : 0);
+//                    }
+//            }
+//        });
+//            animator.start();
+//        }
+//    }
 
     private void refreshDialogType(int d){
         if(hideTabs)return;

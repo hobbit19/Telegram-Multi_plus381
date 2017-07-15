@@ -1421,6 +1421,7 @@ If you forget your password, you will lose access to your Telegram account. Ther
     <string name="HideSuperGroupsTab">Hide supergroups tab</string>
     <string name="HideTabs">Hide Tabs</string>
     <string name="HideTabsCounters">Hide tabs counters</string>
+    <string name="HideTabsToBottom">Hide tabs to bottom</string>
     <string name="HighlightSearchColor">Highlight search color</string>
     <string name="InfiniteSwipe">Infinite swipe between tabs</string>
     <string name="InvertMessageOrder">Invert messages order</string>

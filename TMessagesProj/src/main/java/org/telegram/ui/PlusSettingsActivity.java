@@ -110,6 +110,7 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
     private int dialogsInfiniteTabsSwipe;
     private int chatShowDirectShareBtn;
     private int dialogsHideTabsCounters;
+    private int dialogsHideTabsToBottom;
     private int dialogsTabsCountersCountChats;
     private int dialogsTabsCountersCountNotMuted;
     private int chatDirectShareToMenu;
@@ -178,6 +179,7 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
         dialogsDisableTabsAnimationCheckRow = rowCount++;
         dialogsInfiniteTabsSwipe = rowCount++;
         dialogsHideTabsCounters = rowCount++;
+        dialogsHideTabsToBottom = rowCount++;
         dialogsTabsCountersCountNotMuted = rowCount++;
         dialogsTabsCountersCountChats = rowCount++;
 
@@ -467,6 +469,18 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(!disable);
                     }
+                } else if (i == dialogsHideTabsToBottom) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
+                    boolean disable = preferences.getBoolean("dialogsHideTabsToBottom", false);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("dialogsHideTabsToBottom", !disable);
+                    editor.apply();
+                    editor.commit();
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.refreshTabs, Integer.valueOf(14));
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!disable);
+                    }
+                    Utilities.restartApp();
                 } else if (i == dialogsTabsCountersCountChats) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("plusconfig", Activity.MODE_PRIVATE);
                     boolean disable = preferences.getBoolean("tabsCountersCountChats", false);
@@ -993,7 +1007,7 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
                     i == chatShowDateToastRow || i == chatHideLeftGroupRow || i == chatHideJoinedGroupRow || i == chatHideBotKeyboardRow || i == dialogsHideTabsCheckRow || i == dialogsDisableTabsAnimationCheckRow ||
                     i == dialogsInfiniteTabsSwipe || i == dialogsHideTabsCounters || i == dialogsTabsCountersCountChats || i == dialogsTabsCountersCountNotMuted || i == chatSearchUserOnTwitterRow ||
                     i == keepOriginalFilenameRow ||  i == dialogsPicClickRow || i == dialogsGroupPicClickRow || i == hideMobileNumberRow || i == showUsernameRow ||
-                    i == notificationInvertMessagesOrderRow || i == savePlusSettingsRow || i == restorePlusSettingsRow || i == resetPlusSettingsRow;
+                    i == notificationInvertMessagesOrderRow || i == savePlusSettingsRow || i == restorePlusSettingsRow || i == resetPlusSettingsRow || i == dialogsHideTabsToBottom;
         }
 
         @Override
@@ -1115,7 +1129,9 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
                     textCell.setTextAndCheck(LocaleController.getString("InfiniteSwipe", R.string.InfiniteSwipe), preferences.getBoolean("infiniteTabsSwipe", false), true);
                 } else if (i == dialogsHideTabsCounters) {
                     textCell.setTextAndCheck(LocaleController.getString("HideTabsCounters", R.string.HideTabsCounters), preferences.getBoolean("hideTabsCounters", false), true);
-                } else if (i == dialogsTabsCountersCountChats) {
+                } else if (i == dialogsHideTabsToBottom) {
+                    textCell.setTextAndCheck(LocaleController.getString("HideTabsToBottom", R.string.HideTabsToBottom), preferences.getBoolean("dialogsHideTabsToBottom", false), true);
+                }else if (i == dialogsTabsCountersCountChats) {
                     textCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountChats", R.string.HeaderTabCounterCountChats), preferences.getBoolean("tabsCountersCountChats", false), true);
                 } else if (i == dialogsTabsCountersCountNotMuted) {
                     textCell.setTextAndCheck(LocaleController.getString("HeaderTabCounterCountNotMuted", R.string.HeaderTabCounterCountNotMuted), preferences.getBoolean("tabsCountersCountNotMuted", false), true);
@@ -1324,7 +1340,7 @@ public class PlusSettingsActivity extends BaseFragment implements NotificationCe
             } else if (i == disableAudioStopRow || i == disableMessageClickRow || i == dialogsHideTabsCheckRow || i == dialogsDisableTabsAnimationCheckRow || i == dialogsInfiniteTabsSwipe ||
                     i == dialogsHideTabsCounters || i == dialogsTabsCountersCountChats || i == dialogsTabsCountersCountNotMuted || i == showAndroidEmojiRow || i == useDeviceFontRow ||
                     i == keepOriginalFilenameRow || i == hideMobileNumberRow || i == showUsernameRow || i == chatDirectShareToMenu || i == chatDirectShareReplies || i == chatDirectShareFavsFirst ||
-                    i == chatShowEditedMarkRow || i == chatShowDateToastRow || i == chatHideLeftGroupRow || i == chatHideJoinedGroupRow || i == chatHideBotKeyboardRow || i == notificationInvertMessagesOrderRow || i == chatSearchUserOnTwitterRow) {
+                    i == chatShowEditedMarkRow || i == chatShowDateToastRow || i == chatHideLeftGroupRow || i == chatHideJoinedGroupRow || i == chatHideBotKeyboardRow || i == notificationInvertMessagesOrderRow || i == chatSearchUserOnTwitterRow || i == dialogsHideTabsToBottom) {
                 return 3;
             } else if (i == emojiPopupSize || i == dialogsTabsHeightRow || i == dialogsPicClickRow || i == dialogsGroupPicClickRow) {
                 return 2;
